@@ -1,2 +1,4 @@
 *.pyc
 *.sqlite3
+db_settings.py
+site_media/
