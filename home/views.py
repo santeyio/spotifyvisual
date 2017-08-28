@@ -11,3 +11,7 @@ def index(request):
 def callback(request):
     context = {}
     return render(request, 'home/callback.html', context)
+
+def login(request):
+    context = {}
+    return render(request, 'home/login.html', context)
