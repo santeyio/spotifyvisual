@@ -1,3 +1,4 @@
+{% verbatim %}
 <!doctype html>
 <html>
   <head>
@@ -28,8 +29,32 @@
         <div id="oauth">
         </div>
         <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
+        <button class="btn btn-default" id="load-playlists">Load Playlists</button>
+        <div id="playlists">
+        </div>
       </div>
     </div>
+
+    <script id="playlists-template" type="text/x-handlebars-template">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>Number of Tracks</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each items }}
+            <tr>
+              <th>{{this.name}}</th>
+              <th>{{this.owner.id}}</th>
+              <th>{{this.tracks.total}}</th>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </script>
 
     <script id="user-profile-template" type="text/x-handlebars-template">
       <h1>Logged in as {{display_name}}</h1>
@@ -76,6 +101,10 @@
           }
           return hashParams;
         }
+        var userId;
+        var playlistsSource = document.getElementById('playlists-template').innerHTML,
+            playlistsTemplate = Handlebars.compile(playlistsSource),
+            playlistsPlaceholder = document.getElementById('playlists');
         var userProfileSource = document.getElementById('user-profile-template').innerHTML,
             userProfileTemplate = Handlebars.compile(userProfileSource),
             userProfilePlaceholder = document.getElementById('user-profile');
@@ -101,6 +130,7 @@
                   'Authorization': 'Bearer ' + access_token
                 },
                 success: function(response) {
+                  userId = response.id
                   userProfilePlaceholder.innerHTML = userProfileTemplate(response);
                   $('#login').hide();
                   $('#loggedin').show();
@@ -125,8 +155,24 @@
               });
             });
           }, false);
+          document.getElementById('load-playlists').addEventListener('click', function(){
+            $.ajax({
+              url: 'https://api.spotify.com/v1/me/playlists?limit=50',
+                headers: {
+                  'Authorization': 'Bearer ' + access_token
+                },
+                success: function(response) {
+                  playlistsPlaceholder.innerHTML = playlistsTemplate(response);
+                  //$('#login').hide();
+                  //$('#loggedin').show();
+                  console.log(response);
+                }
+            });
+          }, false);
+
         }
       })();
     </script>
   </body>
 </html>
+{% endverbatim %}

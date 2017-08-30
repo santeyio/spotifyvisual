@@ -8,11 +8,17 @@
   <link rel="stylesheet", type="text/css", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
 </head>
 <body>
-  <h3>Hey</h3>
-  <p>This is a paragraph.</p>
-  <p>This is <em>another</em> paragraph.</p>
-  <p>And one more test.</p>
-  <h2>And an h2</h2>
+  <div class="container">
+    <div class="row text-center">
+        <h1>Spotify Data Visualizations</h1>
+        <p class="text-muted">To get started, authorize this app to access your spotify account data!</p>
+          <hr/>&nbsp;<br/> 
+    </div>
+    <div class="row text-center">
+      <a href="/login" class="btn-lg btn-primary">Log in with Spotify</a>
+    </div>
+
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.common.js"></script>
   <script src="{% static 'home/main.js' %}"></script>
 </body>
