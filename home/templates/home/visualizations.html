@@ -1,0 +1,83 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet", type="text/css", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+</head>
+<body>
+  <div class="container" id="vue-root">
+    <div id="loggedin" class="row">
+      <div id="user-profile" class="col-md-6">
+        <user-profile></user-profile>
+      </div>
+      <div id="playlists-root" class="col-md-6">
+        <h1>Playlists</h1>
+        <playlists-select></playlists-select>
+      </div>
+    </div>
+    <div class="row">
+      <bubble-chart></bubble-chart>
+    </div>
+
+  </div>
+
+{% verbatim %}
+  <script type="text/x-template" id="user-profile-template">
+    <div>
+      <h1>Logged in as {{display_name}}</h1>
+      <div class="media">
+        <div class="pull-left">
+          <img class="media-object" width="150" :src="image" />
+        </div>
+        <div class="media-body">
+          <dl class="dl-horizontal">
+            <dt>Display name</dt><dd class="clearfix">{{display_name}}</dd>
+            <dt>Id</dt><dd>{{uid}}</dd>
+            <dt>Email</dt><dd>{{email}}</dd>
+            <dt>Spotify URI</dt><dd><a :href="external_url">{{external_url}}</a></dd>
+            <dt>Link</dt><dd><a :href="link">{{link}}</a></dd>
+            <dt>Profile Image</dt><dd class="clearfix"><a :href="image">{{image}}</a></dd>
+            <dt>Country</dt><dd>{{country}}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-template" id="playlists-select-template">
+    <div>
+      <select v-model="selected" size=10 multiple>
+        <option  v-for="playlist in playlists" :value="playlist.id">
+          {{ playlist.name }}
+        </option>
+      </select>
+      <span> Selected: {{ selected }}</span>
+    </div>
+  </script>
+  
+  <script type="text/x-template" id="bubble-chart-template">
+    <div class="col-md-12">
+      <div v-if="loading" class="text-center" style="margin-top:200px;">
+{% endverbatim %}
+        <img src="{% static 'home/ajax-loader.gif' %}"/>
+{% verbatim %}
+      </div>
+      <div v-else>
+		    <svg width="960" height="960" font-family="sans-serif" font-size="10" text-anchor="middle"></svg>
+      </div>
+    </div>
+  </script>
+{% endverbatim %}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+  <script>
+    var access_token = "{{access_token}}";
+  </script>
+  <script src="{% static 'home/main.js' %}"></script>
+</body>
+</html>
