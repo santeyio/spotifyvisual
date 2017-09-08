@@ -101,7 +101,7 @@ def format_track_list(track_list_from_spotify):
     return formatted_track_list
 
 def get_lyrics(artist, name):
-    res = requests.get('https://api.lyrics.ovh/v1/'+urlquote(artist)+'/'+urlquote(name))
+    res = requests.get('http://api.lyrics.ovh/v1/'+urlquote(artist)+'/'+urlquote(name))
     data = res.json()
     # print data
     return data
