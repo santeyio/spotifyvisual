@@ -10,12 +10,16 @@
 <body>
   <div class="container" id="vue-root">
     <div id="loggedin" class="row">
-      <div id="user-profile" class="col-md-6">
+      <div id="user-profile" class="col-md-5">
         <user-profile></user-profile>
       </div>
-      <div id="playlists-root" class="col-md-6">
+      <div id="playlists-root" class="col-md-3">
         <h1>Playlists</h1>
         <playlists-select></playlists-select>
+      </div>
+      <div id="songs-root" class="col-md-4">
+        <h1>Songs</h1>
+        <songs-select></songs-select>
       </div>
     </div>
     <div class="row">
@@ -50,22 +54,35 @@
   <script type="text/x-template" id="playlists-select-template">
     <div>
       <select v-model="selected" size=10 multiple>
-        <option  v-for="playlist in playlists" :value="playlist.id">
+        <option  v-for="playlist in playlists" :value="playlist">
           {{ playlist.name }}
         </option>
       </select>
-      <span> Selected: {{ selected }}</span>
     </div>
   </script>
   
+  <script type="text/x-template" id="songs-select-template">
+    <div>
+    <select v-model="selected" size=10 multiple>
+      <option v-for="song in songs" :value="song">
+        {{ song.name }} -- {{ song.artist }}
+      </option>
+    </select>
+    </div>
+  </script>
+
   <script type="text/x-template" id="bubble-chart-template">
     <div class="col-md-12">
-      <div v-if="loading" class="text-center" style="margin-top:200px;">
+      <div v-show="loading" class="text-center" style="margin-top:200px;">
 {% endverbatim %}
+        <h3>Please be patient, this can take at least a few minutes.</h3>
         <img src="{% static 'home/ajax-loader.gif' %}"/>
 {% verbatim %}
       </div>
-      <div v-else>
+      <div v-show="nolyrics" class="text-center" style="margin-top:200px;">
+        <h3>Whoops, couldn't find any lyrics for that song.</h3>
+      </div>
+      <div v-show="!loading">
 		    <svg width="960" height="960" font-family="sans-serif" font-size="10" text-anchor="middle"></svg>
       </div>
     </div>

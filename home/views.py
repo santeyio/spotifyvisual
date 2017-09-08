@@ -4,7 +4,7 @@ from random import randint
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from django.utils.http import urlencode
+from django.utils.http import urlencode, urlquote
 import requests
 
 from spotifyvisual.private import spotify_keys
@@ -24,13 +24,49 @@ def visualizations(request):
     context['access_token'] = request.GET.get('access_token', False)
     return render(request, 'home/visualizations.html', context)
 
+def song(request):
+    name = request.GET.get('name', False)
+    artist = request.GET.get('artist', False)
+    count = {}
+    if name and artist:
+        lyrics = get_lyrics(artist, name)
+        try:
+            count = parse_lyrics(lyrics['lyrics'], count)
+        except KeyError:
+            return JsonResponse({'error': 'no lyrics found'})
+        return JsonResponse(count)
+
+
 def playlists(request, playlist_id=False):
     access_token = request.COOKIES['access_token'] if request.COOKIES else False
     offset = request.GET.get('offset', 0)
+    owner_id = request.GET.get('owner_id', False)
+    lyrics = request.GET.get('lyrics', False)
+    count = {}
     if playlist_id:
-        pass
+        total = 100
+        track_list = []
+        no_lyrics = []
+        while (offset < total):
+            data = get_playlist_from_spotify(owner_id, playlist_id, access_token, offset)
+            track_list += format_track_list(data)
+            offset += 100
+        # print "track list: ", track_list
+        if lyrics:
+            # for track in track_list:
+                # print 'track: ', track
+                # lyrics = get_lyrics(track['artist'], track['name'])
+                # try:
+                    # count = parse_lyrics(lyrics['lyrics'], count)
+                # except KeyError:
+                    # no_lyrics.append(track)
+            lyrics = get_lyrics(track_list[0]['artist'], track_list[0]['name'])
+            count = parse_lyrics(lyrics['lyrics'], count)
+            print no_lyrics
+            return JsonResponse(count)
+        else:
+            return JsonResponse(track_list, safe=False)
     else:
-        print access_token
         res = requests.get(
                 'https://api.spotify.com/v1/me/playlists',
                 params={
@@ -41,8 +77,45 @@ def playlists(request, playlist_id=False):
                     'Authorization': 'Bearer ' + access_token
                 }
             )
-        j = res.json()
-        return JsonResponse(j)
+        return JsonResponse(res.json())
+
+def get_playlist_from_spotify(owner_id, playlist_id, access_token, offset):
+    res = requests.get(
+        'https://api.spotify.com/v1/users/'+owner_id+'/playlists/'+playlist_id+'/tracks',
+        params={
+            'limit': 100,
+            'offset': offset
+        },
+        headers={
+            'Authorization': 'Bearer ' + access_token
+        })
+    return res.json()
+
+def format_track_list(track_list_from_spotify):
+    formatted_track_list = []
+    for track in track_list_from_spotify['items']:
+        formatted_track_list.append({
+            'artist': track['track']['artists'][0]['name'],
+            'name': track['track']['name'],
+        })
+    return formatted_track_list
+
+def get_lyrics(artist, name):
+    res = requests.get('https://api.lyrics.ovh/v1/'+urlquote(artist)+'/'+urlquote(name))
+    data = res.json()
+    # print data
+    return data
+    
+def parse_lyrics(lyrics, count):
+    lyrics = lyrics.split()
+    for word in lyrics:
+        word = word.lower()
+        word = word.rstrip('?:!.,;"\'')
+        try:
+            count[word] += 1
+        except KeyError:
+            count[word] = 1
+    return count
 
 
 # --------- Spotify Auth Stuff -------------
