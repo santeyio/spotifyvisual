@@ -105,12 +105,12 @@ def get_lyrics(artist, name):
     data = res.json()
     # print data
     return data
-    
+
 def parse_lyrics(lyrics, count):
     lyrics = lyrics.split()
     for word in lyrics:
         word = word.lower()
-        word = word.rstrip('?:!.,;"\'')
+        word = word.strip('?:!.,;"\'()')
         try:
             count[word] += 1
         except KeyError:
