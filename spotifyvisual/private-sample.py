@@ -12,9 +12,9 @@ db_settings = {
     # or postgres for production
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'spotifyvisual',
-        'USER': 'spotifyvisual',
-        'PASSWORD': '5p0tIfYf0Rth3w1n',
+        'NAME': 'someuser',
+        'USER': 'someuser',
+        'PASSWORD': 'somepassword',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }   
